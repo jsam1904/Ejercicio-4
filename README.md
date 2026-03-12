@@ -28,9 +28,9 @@ Ejercicio-4/
 │   └── liga-nacional.json     # Datos de la Liga Nacional
 ├── docs/
 │   └── Ejercicio 4.pdf        # Enunciado en PDF
+│   └── Ejercicio 4.docx       # Enunciado editable
 ├── .gitignore                 # Archivos que no deben versionarse
 ├── Dockerfile                 # Imagen para levantar la API
-├── Ejercicio 4.docx           # Enunciado editable
 ├── docker-compose.yml.example # Ejemplo de despliegue con Compose
 ├── main.go                    # Servidor HTTP y lógica CRUD
 └── README.md                  # Documentación principal
