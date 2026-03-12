@@ -1,0 +1,8 @@
+server
+server.exe
+main.exe
+*.out
+*.test
+
+.DS_Store
+Thumbs.db

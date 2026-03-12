@@ -1,27 +1,44 @@
-# Ejercicio-4 — API REST con Go y Docker
+# Ejercicio-4
 
-API REST en Go para gestionar equipos de la Liga Nacional de Guatemala. Los datos se almacenan en un archivo JSON local.
+API REST desarrollada en Go para gestionar equipos de la Liga Nacional de Guatemala. El proyecto implementa operaciones CRUD sobre un archivo JSON local y puede ejecutarse tanto de forma nativa como con Docker.
 
-## Tecnologías
+## Resumen
 
-- Go 1.22
-- Docker / Docker Compose
+- Lenguaje: Go 1.22
+- Persistencia: archivo JSON local
+- Contenedorización: Docker y Docker Compose
+- Puerto local: `3012`
+- Puerto con Docker: `8080`
+
+## Qué hace este proyecto
+
+- Lista todos los equipos registrados.
+- Busca equipos por ID.
+- Crea nuevos registros.
+- Reemplaza un equipo completo con `PUT`.
+- Actualiza campos puntuales con `PATCH`.
+- Elimina equipos existentes.
+- Devuelve respuestas JSON legibles e indentadas.
 
 ## Estructura del proyecto
 
-```
+```text
 Ejercicio-4/
-├── main.go                    # Servidor HTTP y lógica de la API
-├── Dockerfile                 # Imagen de Go
-├── docker-compose.yml         # Configuración de contenedores
-├── docker-compose.yml.example # Ejemplo de configuración
-└── data/
-    └── liga-nacional.json     # Base de datos JSON
+├── data/
+│   └── liga-nacional.json     # Datos de la Liga Nacional
+├── docs/
+│   └── Ejercicio 4.pdf        # Enunciado en PDF
+├── .gitignore                 # Archivos que no deben versionarse
+├── Dockerfile                 # Imagen para levantar la API
+├── Ejercicio 4.docx           # Enunciado editable
+├── docker-compose.yml.example # Ejemplo de despliegue con Compose
+├── main.go                    # Servidor HTTP y lógica CRUD
+└── README.md                  # Documentación principal
 ```
 
 ## Modelo de datos
 
-Cada equipo tiene la siguiente estructura:
+Cada equipo usa la siguiente estructura:
 
 ```json
 {
@@ -35,37 +52,45 @@ Cada equipo tiene la siguiente estructura:
 }
 ```
 
-## Endpoints
+## Endpoints disponibles
 
-| Método   | Ruta              | Descripción                          |
-|----------|-------------------|--------------------------------------|
-| GET      | `/api/items`      | Listar todos los equipos             |
-| GET      | `/api/items?id=1` | Buscar equipo por ID (query param)   |
-| GET      | `/api/items/{id}` | Obtener equipo por ID (path param)   |
-| POST     | `/api/items`      | Crear un nuevo equipo                |
-| PUT      | `/api/items/{id}` | Reemplazar un equipo completo        |
-| PATCH    | `/api/items/{id}` | Actualizar `name` y/o `titulos`      |
-| DELETE   | `/api/items/{id}` | Eliminar un equipo                   |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/items` | Lista todos los equipos |
+| GET | `/api/items?id=1` | Busca un equipo por ID usando query param |
+| GET | `/api/items/{id}` | Obtiene un equipo por ID usando path param |
+| POST | `/api/items` | Crea un nuevo equipo |
+| PUT | `/api/items/{id}` | Reemplaza completamente un equipo |
+| PATCH | `/api/items/{id}` | Actualiza `name` y/o `titulos` |
+| DELETE | `/api/items/{id}` | Elimina un equipo |
 
-## Ejecutar con Docker
+## Cómo ejecutarlo
+
+### Opción 1: con Docker
+
+Si usas el archivo de ejemplo:
 
 ```bash
-# Copiar el archivo de ejemplo
 cp docker-compose.yml.example docker-compose.yml
-
-# Construir y levantar el contenedor
 docker compose up --build
 ```
 
-El servidor quedará disponible en `http://localhost:8080`.
+En PowerShell:
 
-## Ejecutar sin Docker
+```powershell
+Copy-Item docker-compose.yml.example docker-compose.yml
+docker compose up --build
+```
+
+La API quedará disponible en `http://localhost:8080`.
+
+### Opción 2: sin Docker
 
 ```bash
 go run main.go
 ```
 
-El servidor corre en el puerto `3012` → `http://localhost:3012`.
+La API quedará disponible en `http://localhost:3012`.
 
 ## Ejemplos de uso
 
@@ -79,13 +104,35 @@ curl http://localhost:8080/api/items/1
 # Crear un equipo
 curl -X POST http://localhost:8080/api/items \
   -H "Content-Type: application/json" \
-  -d '{"id":10,"name":"Xelajú MC","deporte":"Futbol","liga":"Liga Nacional de Guatemala","sede":"Quetzaltenango","year":1928,"titulos":15}'
+  -d '{"id":11,"name":"Nuevo Equipo","deporte":"Futbol","liga":"Liga Nacional de Guatemala","sede":"Guatemala","year":2024,"titulos":0}'
 
-# Actualizar títulos de un equipo
+# Actualizar solo los títulos
 curl -X PATCH http://localhost:8080/api/items/1 \
   -H "Content-Type: application/json" \
-  -d '{"titulos": 33}'
+  -d '{"titulos":33}'
 
 # Eliminar un equipo
 curl -X DELETE http://localhost:8080/api/items/1
 ```
+
+## Ejemplo de respuesta
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Comunicaciones",
+    "deporte": "Futbol",
+    "liga": "Liga Nacional de Guatemala",
+    "sede": "Ciudad de Guatemala",
+    "year": 1949,
+    "titulos": 32
+  }
+]
+```
+
+## Notas
+
+- Los datos se guardan directamente en `data/liga-nacional.json`.
+- El proyecto no usa base de datos relacional; la persistencia es local.
+- El archivo `Ejercicio 4.docx` sigue en la raíz porque estaba bloqueado por otra aplicación al momento de reorganizar el repo.
