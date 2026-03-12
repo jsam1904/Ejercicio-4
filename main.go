@@ -49,13 +49,21 @@ func saveTeams(teams []Team) error {
 }
 
 func errorJSON(w http.ResponseWriter, code int, msg string) {
+	writeJSON(w, code, map[string]string{
+		"error": msg,
+	})
+}
 
+func writeJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"error": msg,
-	})
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+
+	if err := encoder.Encode(payload); err != nil {
+		http.Error(w, `{"error":"failed to encode json"}`, http.StatusInternalServerError)
+	}
 }
 
 func itemsHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +106,7 @@ func handleCollection(w http.ResponseWriter, r *http.Request) {
 
 			for _, t := range teams {
 				if t.ID == id {
-					json.NewEncoder(w).Encode(t)
+					writeJSON(w, http.StatusOK, t)
 					return
 				}
 			}
@@ -107,7 +115,7 @@ func handleCollection(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		json.NewEncoder(w).Encode(teams)
+		writeJSON(w, http.StatusOK, teams)
 
 	case http.MethodPost:
 
@@ -123,8 +131,7 @@ func handleCollection(w http.ResponseWriter, r *http.Request) {
 
 		saveTeams(teams)
 
-		w.WriteHeader(201)
-		json.NewEncoder(w).Encode(team)
+		writeJSON(w, http.StatusCreated, team)
 
 	default:
 
@@ -159,8 +166,7 @@ func handleItem(w http.ResponseWriter, r *http.Request, id int) {
 	switch r.Method {
 
 	case http.MethodGet:
-
-		json.NewEncoder(w).Encode(teams[index])
+		writeJSON(w, http.StatusOK, teams[index])
 
 	case http.MethodPut:
 
@@ -176,7 +182,7 @@ func handleItem(w http.ResponseWriter, r *http.Request, id int) {
 
 		saveTeams(teams)
 
-		json.NewEncoder(w).Encode(updated)
+		writeJSON(w, http.StatusOK, updated)
 
 	case http.MethodPatch:
 
@@ -194,7 +200,7 @@ func handleItem(w http.ResponseWriter, r *http.Request, id int) {
 
 		saveTeams(teams)
 
-		json.NewEncoder(w).Encode(teams[index])
+		writeJSON(w, http.StatusOK, teams[index])
 
 	case http.MethodDelete:
 
@@ -202,7 +208,7 @@ func handleItem(w http.ResponseWriter, r *http.Request, id int) {
 
 		saveTeams(teams)
 
-		json.NewEncoder(w).Encode(map[string]string{
+		writeJSON(w, http.StatusOK, map[string]string{
 			"message": "deleted",
 		})
 
