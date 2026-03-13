@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build -o server main.go
 
-EXPOSE 3012
+EXPOSE 24546
 
 CMD ["./server"]

@@ -4,4 +4,4 @@ services:
     build: .
     container_name: go-server
     ports:
-      - "8080:3012"
+      - "24546:24546"

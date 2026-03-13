@@ -220,7 +220,7 @@ func handleItem(w http.ResponseWriter, r *http.Request, id int) {
 
 func main() {
 
-	port := "3012"
+	port := "24546"
 
 	http.HandleFunc("/api/items", itemsHandler)
 	http.HandleFunc("/api/items/", itemsHandler)
